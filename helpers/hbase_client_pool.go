@@ -5,27 +5,34 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/astaxie/beego"
 	"github.com/jolestar/go-commons-pool"
+	"github.com/pkg/errors"
 	"net"
 	"time"
 	"zm_go_lib/libs/hbase"
-	//"weather_kid/libs/thrift"
 )
 
 var (
-	host, port, list_table string
-	p = createHbaseClietPool()
+	hbase_host, hbase_port, hbase_list_table string
+	hbase_p *pool.ObjectPool
 )
 
-func init()  {
-	host = beego.AppConfig.String("hbase_host")
-	port = beego.AppConfig.String("hbase_port")
-	list_table = beego.AppConfig.String("hbase_list_table")
+//RegistHbaseClientPool 注册hbase连接池
+func RegistHbaseClientPool() {
+	hbase_host = beego.AppConfig.String("hbase_host")
+	hbase_port = beego.AppConfig.String("hbase_port")
+	hbase_list_table = beego.AppConfig.String("hbase_list_table")
+
+	if hbase_host == "" || hbase_port == "" || hbase_list_table == "" {
+		panic(errors.New("请在conf/app.conf中hbase参数：hbase_host，hbase_port，hbase_list_table"))
+	}
+
+	hbase_p = createHbaseClietPool()
 }
 
 //createHbaseClient：定义创建hbaseClient的函数
 func createHbaseClient() *hbase.HbaseClient {
 	//创建socket
-	socket, err := thrift.NewTSocket(net.JoinHostPort(host, port))
+	socket, err := thrift.NewTSocket(net.JoinHostPort(hbase_host, hbase_port))
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +62,7 @@ func (f *myHbaseClientFactory) ValidateObject(ctx context.Context, object *pool.
 	beego.Debug(`校验hbaseclient`)
 	// do validate
 	client := object.Object.(hbase.HbaseClient)
-	enabled, err := client.IsTableEnabled(hbase.Bytes(list_table))
+	enabled, err := client.IsTableEnabled(hbase.Bytes(hbase_list_table))
 	if err != nil {
 		return false
 	}
@@ -121,8 +128,11 @@ func createHbaseClietPool() *pool.ObjectPool {
 
 //GetClient：获取连接对象
 func HbaseClient() *hbase.HbaseClient {
+	if hbase_p == nil {
+		panic(errors.New("请先注册hbase连接池：RegistHbaseClientPool"))
+	}
 	ctx := context.Background()
-	obj, err := p.BorrowObject(ctx)
+	obj, err := hbase_p.BorrowObject(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -133,7 +143,7 @@ func HbaseClient() *hbase.HbaseClient {
 //Close:回收hbaseclient
 func HbaseClose(client *hbase.HbaseClient) {
 	ctx := context.Background()
-	if err := p.ReturnObject(ctx, client); err != nil {
+	if err := hbase_p.ReturnObject(ctx, client); err != nil {
 		panic(err)
 	}
 }
