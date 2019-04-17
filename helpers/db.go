@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/logs"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 //DbConfig 配置本项目数据库连接
