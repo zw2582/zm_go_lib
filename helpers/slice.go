@@ -1,6 +1,8 @@
 package helpers
 
-import "reflect"
+import (
+	"reflect"
+)
 
 //IndexOf 判断元素是否存在于slice中
 func IndexOf(larr interface{}, a interface{}) int {
@@ -13,7 +15,7 @@ func IndexOf(larr interface{}, a interface{}) int {
 		panic("Type Error! Second argument must be an array or a slice.")
 	}
 
-	for i := 0; i < arr.Len()-1; i++ {
+	for i := 0; i < arr.Len(); i++ {
 		if arr.Index(i).Interface() == v.Interface() {
 			return i
 		}
