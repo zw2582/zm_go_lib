@@ -1,11 +1,16 @@
 package helpers
 
 import (
+	"bytes"
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+	"regexp"
 )
 
 //截取字符串 start 起点下标 length 需要截取的长度
@@ -69,4 +74,26 @@ func UniqueId() string {
 	}
 	return Md5encode(base64.URLEncoding.EncodeToString(b))
 
+}
+
+func DecodeGBK(s []byte) ([]byte, error) {
+	I := bytes.NewReader(s)
+	O := transform.NewReader(I, simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(O)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func validMobile(mobileNum string) bool {
+	const regular = "^(13[0-9]|14[57]|15[0-35-9]|18[07-9]|166)\\\\d{8}$"
+	reg := regexp.MustCompile(regular)
+	return reg.MatchString(mobileNum)
+}
+
+func validEmail(email string) bool {
+	const regular = `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*` //匹配电子邮箱
+	reg := regexp.MustCompile(regular)
+	return reg.MatchString(email)
 }
