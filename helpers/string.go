@@ -1,11 +1,15 @@
 package helpers
 
 import (
+	"bytes"
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	"io"
+	"io/ioutil"
 )
 
 //截取字符串 start 起点下标 length 需要截取的长度
@@ -68,5 +72,15 @@ func UniqueId() string {
 		return ""
 	}
 	return Md5encode(base64.URLEncoding.EncodeToString(b))
+}
 
+//解析gbk
+func DecodeGBK(s []byte) ([]byte, error) {
+	I := bytes.NewReader(s)
+	O := transform.NewReader(I, simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(O)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
 }
