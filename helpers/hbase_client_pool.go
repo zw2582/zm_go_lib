@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"net"
 	"time"
-	"zm_go_lib/libs/hbase"
+	"github.com/zw2582/zm_go_lib/libs/hbase"
 )
 
 var (

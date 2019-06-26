@@ -12,7 +12,7 @@ import (
         "os"
         "strconv"
         "strings"
-        "zm_go_lib/libs/hbase"
+        "github.com/zw2582/zm_go_lib/libs/hbase"
         //"weather_kid/libs/thrift"
   "github.com/apache/thrift/lib/go/thrift"
 )
