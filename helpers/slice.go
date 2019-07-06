@@ -25,7 +25,7 @@ func IndexOf(larr interface{}, a interface{}) int {
 	return -1
 }
 
-func randSlice(slice interface{}) interface{} {
+func RandSlice(slice interface{}) interface{} {
 	//slice1 := slice.([]interface{})
 	v := reflect.ValueOf(slice)
 	if v.Kind() != reflect.Slice {
