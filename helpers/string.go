@@ -10,7 +10,9 @@ import (
 	"io/ioutil"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
+	rand2 "math/rand"
 	"regexp"
+	"time"
 )
 
 //截取字符串 start 起点下标 length 需要截取的长度
@@ -73,6 +75,13 @@ func UniqueId() string {
 		return ""
 	}
 	return Md5encode(base64.URLEncoding.EncodeToString(b))
+}
+
+func OrderNo(prefix string) string {
+	r := rand2.New(rand2.NewSource(time.Now().Unix()))
+	rn := r.Intn(8999)+1000
+	nowstr := time.Now().Format("20060102150405")
+	return fmt.Sprintf("%s%s%s",prefix, nowstr, rn)
 }
 
 //解析gbk
