@@ -106,3 +106,10 @@ func ValidEmail(email string) bool {
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(email)
 }
+
+//ValidContainChinese 包含中文检测
+func ValidContainChinese(str string) bool {
+	const regular = `[^\x00-\x80]+`
+	reg := regexp.MustCompile(regular)
+	return reg.MatchString(str)
+}

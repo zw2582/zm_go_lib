@@ -9,6 +9,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 )
 
 var c *cos.Client
@@ -47,4 +49,22 @@ func UploadTxCloud(name string, f io.Reader) error {
 		panic(err)
 	}
 	return nil
+}
+
+//上传文件到本地
+func UploadLocalFile(name string, f io.Reader) {
+	//检测目录是否存在，不存在则创建
+	p := path.Dir(name)
+	if err := os.MkdirAll(p, 0777); err != nil {
+		panic(err)
+	}
+	//保存文件
+	fio , err := os.Create(name)
+	if err != nil {
+		panic(err)
+	}
+	if _, err := io.Copy(fio, f); err != nil {
+		panic(err)
+	}
+	fio.Close()
 }
