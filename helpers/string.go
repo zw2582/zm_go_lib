@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/rand"
+	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -112,4 +113,9 @@ func ValidContainChinese(str string) bool {
 	const regular = `[^\x00-\x80]+`
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(str)
+}
+
+func Sha1Encode(raw string) string {
+	b := sha1.Sum([]byte(raw))
+	return base64.StdEncoding.EncodeToString(b[:])
 }
