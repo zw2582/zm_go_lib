@@ -97,7 +97,7 @@ func DecodeGBK(s []byte) ([]byte, error) {
 }
 
 func ValidMobile(mobileNum string) bool {
-	const regular = `^(13[0-9]|14[57]|15[0-35-9]|18[07-9]|166)\d{8}$`
+	const regular = `^((\+?86)|(\(\+86\)))?((((13[^4]{1})|(14[5-9]{1})|147|(15[^4]{1})|166|(17\d{1})|(18\d{1})|(19[89]{1}))\d{8})|((134[^9]{1}|1410|1440)\d{7}))$`
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(mobileNum)
 }
