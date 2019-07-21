@@ -13,6 +13,8 @@ import (
 	"golang.org/x/text/transform"
 	rand2 "math/rand"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -118,4 +120,22 @@ func ValidContainChinese(str string) bool {
 func Sha1Encode(raw string) string {
 	b := sha1.Sum([]byte(raw))
 	return base64.StdEncoding.EncodeToString(b[:])
+}
+
+func InetAtoN(ip string) int64 {
+	bits := strings.Split(ip, ".")
+
+	b0, _ := strconv.Atoi(bits[0])
+	b1, _ := strconv.Atoi(bits[1])
+	b2, _ := strconv.Atoi(bits[2])
+	b3, _ := strconv.Atoi(bits[3])
+
+	var sum int64
+
+	sum += int64(b0) << 24
+	sum += int64(b1) << 16
+	sum += int64(b2) << 8
+	sum += int64(b3)
+
+	return sum
 }
