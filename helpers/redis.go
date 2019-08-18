@@ -1,11 +1,14 @@
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 	"net"
+	"reflect"
+	"time"
 )
 
 var _client *redis.Client
@@ -39,4 +42,37 @@ func registRedisPool() {
 	if err := _client.Ping().Err(); err != nil {
 		beego.Error("连接redis失败")
 	}
+}
+
+func RedisCache(cacheKey string, d interface{}, ex time.Duration, f func() (interface{},error)) error {
+	var redis = GetRedisClient()
+	//存在缓存查询缓存
+	if v := redis.Get(cacheKey); v != nil && v.Val() != "" {
+		if err := json.Unmarshal([]byte(v.Val()), d); err != nil {
+			panic(err)
+		}
+		beego.Debug("read from cache "+cacheKey)
+		return nil
+	}
+	//不存在缓存查询源数据,并保存缓存
+	if dd,err := f();err != nil {
+		return err
+	} else {
+		dv := reflect.ValueOf(d)
+		if dv.Kind() != reflect.Ptr || dv.IsNil() {
+			panic("the data not ptr or is nil")
+		}
+		if ddv := reflect.ValueOf(dd); ddv.Kind() == reflect.Ptr {
+			dv.Elem().Set(ddv.Elem())
+		} else {
+			dv.Elem().Set(ddv)
+		}
+	}
+	if b,err := json.Marshal(d); err != nil {
+		panic(err)
+	} else {
+		redis.Set(cacheKey, b, ex)
+	}
+	beego.Debug("read from source and cached in "+cacheKey+" with "+ex.String())
+	return nil
 }
