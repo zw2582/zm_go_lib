@@ -84,7 +84,7 @@ func OrderNo(prefix string) string {
 	r := rand2.New(rand2.NewSource(time.Now().Unix()))
 	rn := r.Intn(8999)+1000
 	nowstr := time.Now().Format("20060102150405")
-	return fmt.Sprintf("%s%s%s",prefix, nowstr, rn)
+	return fmt.Sprintf("%s%s%d",prefix, nowstr, rn)
 }
 
 //解析gbk
