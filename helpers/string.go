@@ -117,6 +117,13 @@ func ValidContainChinese(str string) bool {
 	return reg.MatchString(str)
 }
 
+//ValidChineName 验证中文姓名
+func ValidChineName(str string) bool {
+	const regular = `^[\u4E00-\u9FA5]{2,10}$`
+	reg := regexp.MustCompile(regular)
+	return reg.MatchString(str)
+}
+
 func Sha1Encode(raw string) string {
 	b := sha1.Sum([]byte(raw))
 	return base64.StdEncoding.EncodeToString(b[:])
