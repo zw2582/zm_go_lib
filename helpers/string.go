@@ -81,8 +81,7 @@ func UniqueId() string {
 }
 
 func OrderNo(prefix string) string {
-	r := rand2.New(rand2.NewSource(time.Now().Unix()))
-	rn := r.Intn(8999)+1000
+	rn := rand2.Intn(8999)+1000
 	nowstr := time.Now().Format("20060102150405")
 	return fmt.Sprintf("%s%s%d",prefix, nowstr, rn)
 }
@@ -119,7 +118,7 @@ func ValidContainChinese(str string) bool {
 
 //ValidChineName 验证中文姓名
 func ValidChineName(str string) bool {
-	const regular = `^[\u4E00-\u9FA5]{2,10}$`
+	const regular = "^[\u4E00-\u9FA5]{2,10}$"
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(str)
 }
