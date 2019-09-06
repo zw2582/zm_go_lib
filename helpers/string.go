@@ -81,9 +81,10 @@ func UniqueId() string {
 }
 
 func OrderNo(prefix string) string {
-	rn := rand2.Intn(8999)+1000
+	rn := rand2.Intn(9999)
+	rns := fmt.Sprintf("%04d", rn)
 	nowstr := time.Now().Format("20060102150405")
-	return fmt.Sprintf("%s%s%d",prefix, nowstr, rn)
+	return fmt.Sprintf("%s%s%s",prefix, nowstr, rns)
 }
 
 //解析gbk

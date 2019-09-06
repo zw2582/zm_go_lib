@@ -26,6 +26,7 @@ func registRedisPool() {
 	host := beego.AppConfig.DefaultString("redis_host", "127.0.0.1")
 	password := beego.AppConfig.DefaultString("redis_password","")
 	port := beego.AppConfig.DefaultString("redis_port", "6379")
+	db := beego.AppConfig.DefaultInt("redis_db", 0)
 
 	if host == "" || port == "" {
 		panic(errors.New("请在conf/app.conf中redis参数：redis_host，redis_password，redis_port"))
@@ -36,7 +37,7 @@ func registRedisPool() {
 	_client = redis.NewClient(&redis.Options{
 		Addr:net.JoinHostPort(host, port),
 		Password:password,
-		DB:0,
+		DB:db,
 	})
 	fmt.Printf("%+v\n", _client)
 	if err := _client.Ping().Err(); err != nil {
