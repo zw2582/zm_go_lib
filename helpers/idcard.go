@@ -1,48 +1,48 @@
 package helpers
 
 import (
-	"strconv"
 	"errors"
+	"strconv"
 	"time"
 )
 
 var weight = [17]int{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
 var valid_value = [11]byte{'1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'}
 var valid_province = []string{
-	"11",			// 北京市
-	"12",			// 天津市
-	"13",			// 河北省
-	"14",			// 山西省
-	"15",			// 内蒙古自治区
-	"21",			// 辽宁省
-	"22",			// 吉林省
-	"23",			// 黑龙江省
-	"31",			// 上海市
-	"32",			// 江苏省
-	"33",			// 浙江省
-	"34",			// 安徽省
-	"35",			// 福建省
-	"36",			// 山西省
-	"37",			// 山东省
-	"41",			// 河南省
-	"42",			// 湖北省
-	"43",			// 湖南省
-	"44",			// 广东省
-	"45",			// 广西壮族自治区
-	"46",			// 海南省
-	"50",			// 重庆市
-	"51",			// 四川省
-	"52",			// 贵州省
-	"53",			// 云南省
-	"54",			// 西藏自治区
-	"61",			// 陕西省
-	"62",			// 甘肃省
-	"63",			// 青海省
-	"64",			// 宁夏回族自治区
-	"65",			// 新疆维吾尔自治区
-	"71",			// 台湾省
-	"81",			// 香港特别行政区
-	"91",			// 澳门特别行政区
+	"11", // 北京市
+	"12", // 天津市
+	"13", // 河北省
+	"14", // 山西省
+	"15", // 内蒙古自治区
+	"21", // 辽宁省
+	"22", // 吉林省
+	"23", // 黑龙江省
+	"31", // 上海市
+	"32", // 江苏省
+	"33", // 浙江省
+	"34", // 安徽省
+	"35", // 福建省
+	"36", // 山西省
+	"37", // 山东省
+	"41", // 河南省
+	"42", // 湖北省
+	"43", // 湖南省
+	"44", // 广东省
+	"45", // 广西壮族自治区
+	"46", // 海南省
+	"50", // 重庆市
+	"51", // 四川省
+	"52", // 贵州省
+	"53", // 云南省
+	"54", // 西藏自治区
+	"61", // 陕西省
+	"62", // 甘肃省
+	"63", // 青海省
+	"64", // 宁夏回族自治区
+	"65", // 新疆维吾尔自治区
+	"71", // 台湾省
+	"81", // 香港特别行政区
+	"91", // 澳门特别行政区
 }
 
 // Check citizen number 18 valid.
@@ -53,7 +53,7 @@ func IsValidCitizenNo18(citizenNo18 *[]byte) bool {
 	}
 
 	nSum := 0
-	for i := 0; i < nLen - 1; i++ {
+	for i := 0; i < nLen-1; i++ {
 		n, _ := strconv.Atoi(string((*citizenNo18)[i]))
 		nSum += n * weight[i]
 	}
@@ -74,7 +74,7 @@ func Citizen15To18(citizenNo15 []byte) []byte {
 
 	citizenNo18 := make([]byte, 0)
 	citizenNo18 = append(citizenNo18, citizenNo15[:6]...)
-	citizenNo18 = append(citizenNo18, '1', '9');
+	citizenNo18 = append(citizenNo18, '1', '9')
 	citizenNo18 = append(citizenNo18, citizenNo15[6:]...)
 
 	sum := 0
@@ -93,7 +93,7 @@ func IsLeapYear(nYear int) bool {
 		return false
 	}
 
-	if (nYear % 4 == 0 && nYear % 100 != 0) || nYear % 400 == 0 {
+	if (nYear%4 == 0 && nYear%100 != 0) || nYear%400 == 0 {
 		return true
 	}
 
@@ -207,7 +207,7 @@ func GetCitizenNoInfo(citizenNo []byte) (err error, birthday int64, isMale bool,
 
 	// Gender information.
 	genderMask, _ := strconv.Atoi(string(citizenNo[16]))
-	if genderMask % 2 == 0 {
+	if genderMask%2 == 0 {
 		isMale = false
 	} else {
 		isMale = true

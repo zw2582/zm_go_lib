@@ -7,10 +7,10 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
+	"io"
+	"io/ioutil"
 	rand2 "math/rand"
 	"regexp"
 	"strconv"
@@ -84,7 +84,7 @@ func OrderNo(prefix string) string {
 	rn := rand2.Intn(9999)
 	rns := fmt.Sprintf("%04d", rn)
 	nowstr := time.Now().Format("20060102150405")
-	return fmt.Sprintf("%s%s%s",prefix, nowstr, rns)
+	return fmt.Sprintf("%s%s%s", prefix, nowstr, rns)
 }
 
 //解析gbk
@@ -145,4 +145,12 @@ func InetAtoN(ip string) int64 {
 	sum += int64(b3)
 
 	return sum
+}
+
+func SumMu(a bool, x, y interface{}) interface{} {
+	if a {
+		return x
+	} else {
+		return y
+	}
 }

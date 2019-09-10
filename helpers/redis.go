@@ -24,7 +24,7 @@ func GetRedisClient() *redis.Client {
 //RegistRedisPool:注册全局redis连接池
 func registRedisPool() {
 	host := beego.AppConfig.DefaultString("redis_host", "127.0.0.1")
-	password := beego.AppConfig.DefaultString("redis_password","")
+	password := beego.AppConfig.DefaultString("redis_password", "")
 	port := beego.AppConfig.DefaultString("redis_port", "6379")
 	db := beego.AppConfig.DefaultInt("redis_db", 0)
 
@@ -35,9 +35,9 @@ func registRedisPool() {
 	beego.Debug(fmt.Sprintf("连接redis:host:%s,password:%s,port:%s", host, password, port))
 
 	_client = redis.NewClient(&redis.Options{
-		Addr:net.JoinHostPort(host, port),
-		Password:password,
-		DB:db,
+		Addr:     net.JoinHostPort(host, port),
+		Password: password,
+		DB:       db,
 	})
 	fmt.Printf("%+v\n", _client)
 	if err := _client.Ping().Err(); err != nil {
@@ -45,18 +45,18 @@ func registRedisPool() {
 	}
 }
 
-func RedisCache(cacheKey string, d interface{}, ex time.Duration, f func() (interface{},error)) error {
+func RedisCache(cacheKey string, d interface{}, ex time.Duration, f func() (interface{}, error)) error {
 	var redis = GetRedisClient()
 	//存在缓存查询缓存
 	if v := redis.Get(cacheKey); v != nil && v.Val() != "" {
 		if err := json.Unmarshal([]byte(v.Val()), d); err != nil {
 			panic(err)
 		}
-		beego.Debug("read from cache "+cacheKey)
+		beego.Debug("read from cache " + cacheKey)
 		return nil
 	}
 	//不存在缓存查询源数据,并保存缓存
-	if dd,err := f();err != nil {
+	if dd, err := f(); err != nil {
 		return err
 	} else {
 		dv := reflect.ValueOf(d)
@@ -69,11 +69,11 @@ func RedisCache(cacheKey string, d interface{}, ex time.Duration, f func() (inte
 			dv.Elem().Set(ddv)
 		}
 	}
-	if b,err := json.Marshal(d); err != nil {
+	if b, err := json.Marshal(d); err != nil {
 		panic(err)
 	} else {
 		redis.Set(cacheKey, b, ex)
 	}
-	beego.Debug("read from source and cached in "+cacheKey+" with "+ex.String())
+	beego.Debug("read from source and cached in " + cacheKey + " with " + ex.String())
 	return nil
 }

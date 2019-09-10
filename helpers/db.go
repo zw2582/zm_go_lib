@@ -3,8 +3,8 @@ package helpers
 import (
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -25,7 +25,7 @@ func DbConfig() {
 
 	if orm.Debug == true {
 		sqllog := logs.NewLogger()
-		sqllog.SetLogger(logs.AdapterFile,`{"filename":"logs/sql.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
+		sqllog.SetLogger(logs.AdapterFile, `{"filename":"logs/sql.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
 		orm.DebugLog = orm.NewLog(sqllog)
 	}
 	//l, _ := time.LoadLocation("Asia/Shanghai")
