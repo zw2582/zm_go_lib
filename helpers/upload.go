@@ -25,11 +25,11 @@ func InitTxCloud() {
 	region := beego.AppConfig.String("tx_cos_region")
 	secretId := beego.AppConfig.String("tx_cos_secretId")
 	secretKey := beego.AppConfig.String("tx_cos_secretKey")
-	if bucketname == "" || secretId == "" || secretKey == "" || appid=="" || region=="" {
+	if bucketname == "" || secretId == "" || secretKey == "" || appid == "" || region == "" {
 		panic(errors.New("请在conf/app.conf中配置腾讯云参数,tx_cos_bucketname," +
 			"tx_cos_appid,tx_cos_region,tx_cos_secretId,tx_cos_secretKey"))
 	}
-	u, _ := url.Parse(fmt.Sprintf("http://%s-%s.cos.%s.myqcloud.com", bucketname,appid,region))
+	u, _ := url.Parse(fmt.Sprintf("http://%s-%s.cos.%s.myqcloud.com", bucketname, appid, region))
 	b := &cos.BaseURL{BucketURL: u}
 	c = cos.NewClient(b, &http.Client{
 		Transport: &cos.AuthorizationTransport{
@@ -59,7 +59,7 @@ func UploadLocalFile(name string, f io.Reader) error {
 		return err
 	}
 	//保存文件
-	fio , err := os.Create(name)
+	fio, err := os.Create(name)
 	if err != nil {
 		return err
 	}

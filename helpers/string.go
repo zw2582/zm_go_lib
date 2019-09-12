@@ -7,10 +7,10 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
+	"io"
+	"io/ioutil"
 	rand2 "math/rand"
 	"regexp"
 	"strconv"
@@ -81,10 +81,10 @@ func UniqueId() string {
 }
 
 func OrderNo(prefix string) string {
-	r := rand2.New(rand2.NewSource(time.Now().Unix()))
-	rn := r.Intn(8999)+1000
+	rn := rand2.Intn(9999)
+	rns := fmt.Sprintf("%04d", rn)
 	nowstr := time.Now().Format("20060102150405")
-	return fmt.Sprintf("%s%s%s",prefix, nowstr, rn)
+	return fmt.Sprintf("%s%s%s", prefix, nowstr, rns)
 }
 
 //解析gbk
@@ -117,6 +117,13 @@ func ValidContainChinese(str string) bool {
 	return reg.MatchString(str)
 }
 
+//ValidChineName 验证中文姓名
+func ValidChineName(str string) bool {
+	const regular = "^[\u4E00-\u9FA5]{2,10}$"
+	reg := regexp.MustCompile(regular)
+	return reg.MatchString(str)
+}
+
 func Sha1Encode(raw string) string {
 	b := sha1.Sum([]byte(raw))
 	return base64.StdEncoding.EncodeToString(b[:])
@@ -138,4 +145,12 @@ func InetAtoN(ip string) int64 {
 	sum += int64(b3)
 
 	return sum
+}
+
+func SumMu(a bool, x, y interface{}) interface{} {
+	if a {
+		return x
+	} else {
+		return y
+	}
 }

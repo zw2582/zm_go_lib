@@ -16,7 +16,7 @@ func Valid(data interface{}) error {
 	if !b {
 		//验证失败，报告用户提交的数据有误
 		err := valid.Errors[0]
-		return errors.New(err.Key+`:`+err.Message)
+		return errors.New(err.Key + `:` + err.Message)
 	}
 	return nil
 }

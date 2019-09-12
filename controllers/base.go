@@ -11,10 +11,10 @@ type BaseController struct {
 
 //返回成功
 func (c *BaseController) AjaxSucc(data interface{}, msg ...string) {
-	c.Data[`json`] = map[string]interface{} {
-		`status`:0,
-		`msg`:strings.Join(msg, ","),
-		`data`:data,
+	c.Data[`json`] = map[string]interface{}{
+		`status`: 0,
+		`msg`:    strings.Join(msg, ","),
+		`data`:   data,
 	}
 	//beego.Debug(fmt.Sprintf("ajaxSucc:%+v", c.Data[`json`]))
 	c.ServeJSON()
@@ -22,10 +22,10 @@ func (c *BaseController) AjaxSucc(data interface{}, msg ...string) {
 
 //返回失败
 func (c *BaseController) AjaxFail(data interface{}, msg ...string) {
-	c.Data[`json`] = map[string]interface{} {
-		`status`:1,
-		`msg`:strings.Join(msg, ","),
-		`data`:data,
+	c.Data[`json`] = map[string]interface{}{
+		`status`: 1,
+		`msg`:    strings.Join(msg, ","),
+		`data`:   data,
 	}
 	//beego.Debug(fmt.Sprintf("ajaxSucc:%+v", c.Data[`json`]))
 	c.ServeJSON()
