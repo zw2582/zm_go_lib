@@ -14,7 +14,7 @@ func DbConfig() {
 	var db_port = beego.AppConfig.DefaultInt("db_port", 3306)
 	var db_name = beego.AppConfig.DefaultString("db_name", "weather_kid")
 	var db_user = beego.AppConfig.DefaultString("db_user", "root")
-	var db_pwd = beego.AppConfig.DefaultString("db_pwd", "password")
+	var db_pwd = beego.AppConfig.DefaultString("db_pwd", "")
 
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 

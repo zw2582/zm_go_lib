@@ -52,19 +52,20 @@ func UploadTxCloud(name string, f io.Reader) error {
 }
 
 //上传文件到本地
-func UploadLocalFile(name string, f io.Reader) {
+func UploadLocalFile(name string, f io.Reader) error {
 	//检测目录是否存在，不存在则创建
 	p := path.Dir(name)
 	if err := os.MkdirAll(p, 0777); err != nil {
-		panic(err)
+		return err
 	}
 	//保存文件
 	fio, err := os.Create(name)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if _, err := io.Copy(fio, f); err != nil {
-		panic(err)
+		return err
 	}
 	fio.Close()
+	return nil
 }
