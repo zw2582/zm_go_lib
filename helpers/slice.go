@@ -88,40 +88,58 @@ func SliceColumn(slice interface{}, keystr string, params ...string) map[interfa
 }
 
 // 通过两重循环过滤重复元素
-func RemoveRepByLoop(slc []interface{}) []interface{} {
-	var result = make([]interface{}, 0) // 存放结果
-	for i := range slc {
+func RemoveRepByLoop(slice interface{}) interface{} {
+	v := reflect.ValueOf(slice)
+	if v.Kind() != reflect.Slice {
+		panic("type error")
+	}
+	// 存放结果
+	result := reflect.MakeSlice(reflect.TypeOf(slice),0, v.Len())
+
+	for i:=0; i< v.Len(); i++ {
 		flag := true
-		for j := range result {
-			if slc[i] == result[j] {
+		for j :=0; j < result.Len(); j++ {
+			if v.Index(i).Interface() == result.Index(j).Interface() {
 				flag = false // 存在重复元素，标识为false
 				break
 			}
 		}
-		if flag { // 标识为false，不添加进结果
-			result = append(result, slc[i])
+		if flag {
+			result = reflect.Append(result, v.Index(i))
+			//reflect.AppendSlice(result, v.Index(i))
 		}
 	}
-	return result
+	return result.Interface()
 }
 
 // 通过map主键唯一的特性过滤重复元素
-func RemoveRepByMap(slc []interface{}) []interface{} {
-	var result = make([]interface{}, 0)
-	tempMap := map[interface{}]byte{} // 存放不重复主键
-	for _, e := range slc {
-		l := len(tempMap)
-		tempMap[e] = 0
-		if len(tempMap) != l { // 加入map后，map长度变化，则元素不重复
-			result = append(result, e)
+func RemoveRepByMap(slc interface{}) interface{} {
+	v := reflect.ValueOf(slc)
+	if v.Kind() != reflect.Slice {
+		panic("type error")
+	}
+	// 存放结果
+	result := reflect.MakeSlice(reflect.TypeOf(slc),0, v.Len())
+	// 存放不重复主键
+	tempMap := reflect.MakeMap(reflect.TypeOf(map[interface{}]int{}))
+
+	for i:=0;i<v.Len();i++ {
+		t := v.Index(i)
+		if tempMap.MapIndex(t) == reflect.ValueOf(nil) {
+			result = reflect.Append(result, t)
+			tempMap.SetMapIndex(t, reflect.ValueOf(1))
 		}
 	}
-	return result
+	return result.Interface()
 }
 
 // 元素去重
-func RemoveRep(slc []interface{}) []interface{} {
-	if len(slc) < 1024 {
+func RemoveRep(slc interface{}) interface{} {
+	v := reflect.ValueOf(slc)
+	if v.Kind() != reflect.Slice {
+		panic("type error")
+	}
+	if v.Len() < 1024 {
 		// 切片长度小于1024的时候，循环来过滤
 		return RemoveRepByLoop(slc)
 	} else {
