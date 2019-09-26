@@ -4,9 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -92,64 +90,20 @@ func (this EsHelper) TestToken(idxname, word, tokenDriver string) (tags []string
 	return
 }
 
-func (this EsHelper) SyncBeegoModel(indexName string, modelType EsSync) {
-	o := orm.NewOrm()
-
-	page := 0
-	size := 1000
-	for {
-		//查询novels
-		novels := make([]interface{}, 0)
-		_, err := o.QueryTable(modelType).Offset(page*size).Limit(size).Filter("sync", 1).All(&novels)
-		page++
-		if err != nil {
-			if err == orm.ErrNoRows {
-				break
-			}
-			panic(err)
-		}
-		if len(novels) == 0 {
-			beego.Info("no data to sync")
-			break
-		}
-		//修改novel同步状态为2
-		var novelIds []interface{}
-		for _, val := range novels {
-			novelIds = append(novelIds, val.(EsSync).GetId())
-		}
-		if _, err := o.QueryTable(modelType).Filter("id__in", novelIds...).Update(orm.Params{"sync": 2}); err != nil {
-			panic(err)
-		}
-		//整理同步数据
-		bulkTxt := ""
-		for _, val := range novels {
-			if v, err := json.Marshal(val); err != nil {
-				beego.Error(err)
-				continue
-			} else {
-				bulkTxt += fmt.Sprintf("{\"index\":{\"_id\":\"%d\"}}\n", val.(EsSync).GetId())
-				bulkTxt += string(v) + "\n"
-			}
-		}
-		//发送请求
-		resj := this.SendPostRaw(fmt.Sprintf("/%s/_doc/_bulk", indexName), []byte(bulkTxt))
-		if e, ok := resj["error"].(bool); ok && e {
-			panic(resj.String())
-		}
-		for _, v := range resj["items"].([]interface{}) {
-			index := v.(map[string]interface{})["index"].(map[string]interface{})
-			if int(index["status"].(float64)/10) == 20 {
-				o.QueryTable(modelType).Filter("id", index["_id"]).Update(orm.Params{"sync": 3})
-				continue
-			}
-
-			beego.Error("没有同步成功:", v)
-		}
-		if len(novels) < size {
-			beego.Info("同步结束")
-			break
-		}
+func (this EsHelper) SendPut(basepath string, data interface{}) HArr {
+	jd, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
 	}
+	return this.SendPutRaw(basepath, jd)
+}
+
+func (this EsHelper) SendPost(basepath string, data interface{}) HArr {
+	jd, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+	return this.SendPostRaw(basepath, jd)
 }
 
 func (this EsHelper) SendPutRaw(basepath string, raw []byte) HArr {
@@ -176,7 +130,6 @@ func (this EsHelper) SendPutRaw(basepath string, raw []byte) HArr {
 }
 
 func (this EsHelper) SendPostRaw(basepath string, raw []byte) HArr {
-	fmt.Println(this.EsHost)
 	es_path := this.EsHost + ":" + this.EsPort
 	link := es_path + basepath
 	beego.Info("eshelper:SendPostRaw:", link, "\r\n", string(raw))
