@@ -30,3 +30,14 @@ func (c *BaseController) AjaxFail(data interface{}, msg ...string) {
 	//beego.Debug(fmt.Sprintf("ajaxSucc:%+v", c.Data[`json`]))
 	c.ServeJSON()
 }
+
+//返回失败
+func (c *BaseController) AjaxReturn(state int, data interface{}, msg ...string) {
+	c.Data[`json`] = map[string]interface{}{
+		`status`: state,
+		`msg`:    strings.Join(msg, ","),
+		`data`:   data,
+	}
+	//beego.Debug(fmt.Sprintf("ajaxSucc:%+v", c.Data[`json`]))
+	c.ServeJSON()
+}
