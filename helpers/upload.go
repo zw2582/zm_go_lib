@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 var c *cos.Client
@@ -54,7 +54,7 @@ func UploadTxCloud(name string, f io.Reader) error {
 //上传文件到本地
 func UploadLocalFile(name string, f io.Reader) error {
 	//检测目录是否存在，不存在则创建
-	p := path.Dir(name)
+	p := filepath.Dir(name)
 	if err := os.MkdirAll(p, 0777); err != nil {
 		return err
 	}
