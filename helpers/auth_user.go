@@ -5,13 +5,19 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis"
-	"mobange/models"
 	"strconv"
 	"time"
 )
 
+//UserModelInter 用户认证的接口
+type UserModelInter interface {
+	UserGetById(uid uint) UserModelInter
+	GetId() uint
+}
+
 //认证user
 type AuthUser struct {
+	UserModel UserModelInter
 	Token string	//认证token
 	JwtSecret string //jwt加密秘钥
 	BlackKey string	//黑名单redis key
@@ -32,7 +38,7 @@ func (this *AuthUser) Uid() (uint, error) {
 	if score > 0 && float64(time.Now().Unix())-score > 5 {
 		this.uid = 0
 		this.authed = 1
-		this.autherr = models.NewLogoutError("登录已失效")
+		this.autherr = fmt.Errorf("登录已失效")
 		return this.uid, this.autherr
 	}
 
@@ -47,12 +53,12 @@ func (this *AuthUser) Uid() (uint, error) {
 	})
 	if err != nil {
 		beego.Error(err)
-		this.autherr = models.NewLogoutError("用户未登录")
+		this.autherr = fmt.Errorf("用户未登录")
 		return this.uid, this.autherr
 	}
 	if !token.Valid {
 		beego.Error(err)
-		this.autherr = models.NewLogoutError("用户未登录")
+		this.autherr = fmt.Errorf("用户未登录")
 		return this.uid, this.autherr
 	}
 	id,_ := strconv.Atoi(claim.Id)
@@ -76,7 +82,7 @@ func (this *AuthUser) JwtRefresh() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	user := models.UserGetById(uid)
+	user := this.UserModel.UserGetById(uid)
 	return this.JwtLogin(user)
 }
 
@@ -92,22 +98,23 @@ func (this *AuthUser) LogOut() {
 }
 
 //JwtLogin 登录
-func (this *AuthUser) JwtLogin(user models.User) (tokenStr string, err error) {
-	if user.Id == 0 {
+func (this *AuthUser) JwtLogin(user UserModelInter) (tokenStr string, err error) {
+	uid := user.GetId()
+	if uid == 0 {
 		return "", fmt.Errorf("用户不存在")
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: time.Now().Add(time.Hour*24*5).Unix(),	//5天后失效
 		Subject:"",
-		Id:strconv.Itoa(int(user.Id)),
+		Id:strconv.Itoa(int(uid)),
 	})
 
 	tokenStr, err = token.SignedString([]byte(this.JwtSecret))
 	if err != nil {
 		panic(err)
 	}
-	this.uid = user.Id
+	this.uid = uid
 	this.autherr = nil
 	this.authed = 1
 	this.Token = tokenStr
