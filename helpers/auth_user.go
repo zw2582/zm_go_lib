@@ -69,6 +69,11 @@ func (this *AuthUser) Uid() (uint, error) {
 
 //JwtRefresh 刷新
 func (this *AuthUser) JwtRefresh() (string, error) {
+	uid, err := this.Uid()
+	if err != nil {
+		return "", err
+	}
+
 	//将过去的token加入黑名单
 	redisCli.ZAdd(this.BlackKey, redis.Z{float64(time.Now().Unix()), this.Token})
 
@@ -78,10 +83,6 @@ func (this *AuthUser) JwtRefresh() (string, error) {
 	redisCli.ZRemRangeByScore(this.BlackKey, "0", maxstr)
 
 	//产生新的token
-	uid, err := this.Uid()
-	if err != nil {
-		return "", err
-	}
 	user := this.UserModel.UserGetById(uid)
 	return this.JwtLogin(user)
 }
