@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/astaxie/beego v1.11.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/google/go-querystring v1.0.0 // indirect
