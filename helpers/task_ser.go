@@ -1,4 +1,4 @@
-package services
+package helpers
 
 import (
 	"github.com/astaxie/beego/logs"

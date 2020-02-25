@@ -49,3 +49,14 @@ func TestRemoveRepByMap(t *testing.T) {
 		}
 	}
 }
+
+func TestDiffSlice(t *testing.T) {
+	one := []string{}
+	two := []string{"c", "d", "e"}
+
+	r := DiffSlice(one, two).([]string)
+	t.Log(r)
+	r = DiffSlice(two, one).([]string)
+	t.Log(r)
+
+}

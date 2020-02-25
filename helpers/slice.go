@@ -147,3 +147,32 @@ func RemoveRep(slc interface{}) interface{} {
 		return RemoveRepByMap(slc)
 	}
 }
+
+//求切片的差集
+func DiffSlice(one, two interface{}) interface{} {
+	v1 := reflect.ValueOf(one)
+	if v1.Kind() != reflect.Slice {
+		panic("type error")
+	}
+	v2 := reflect.ValueOf(two)
+	if v2.Kind() != reflect.Slice {
+		panic("type error")
+	}
+
+	// 存放结果
+	result := reflect.MakeSlice(reflect.TypeOf(one),0, v1.Len())
+
+	for i:=0; i< v1.Len(); i++ {
+		flag := true
+		for j :=0; j < v2.Len(); j++ {
+			if v1.Index(i).Interface() == v2.Index(j).Interface() {
+				flag = false // 该值在v2集合中存在，不是差集，结束循环
+				break
+			}
+		}
+		if flag {
+			result = reflect.Append(result, v1.Index(i))
+		}
+	}
+	return result.Interface()
+}
