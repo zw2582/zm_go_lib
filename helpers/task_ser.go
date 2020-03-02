@@ -17,16 +17,17 @@ type Task struct {
 	name string
 	doing bool //是否正在执行
 	lock sync.Mutex
+	log *logs.BeeLogger
 }
 
 //execSingle 单任务异步执行任务
 func (this *Task) execSingle() {
-	logs.Debug("task:%s 定时器监测到需要执行,lastTime:%s", this.name, this.lastTime.Format("2006-01-02 15:04:05"))
+	this.getLog().Debug("task:%s 定时器监测到需要执行,lastTime:%s", this.name, this.lastTime.Format("2006-01-02 15:04:05"))
 
 	//排除重复执行
 	this.lock.Lock()
 	if this.doing {
-		logs.Debug("task:%s 存在进程正在执行，本次执行中断", this.name)
+		this.getLog().Debug("task:%s 存在进程正在执行，本次执行中断", this.name)
 		this.lock.Unlock()
 		return
 	}
@@ -40,14 +41,14 @@ func (this *Task) execSingle() {
 		//定义异常记录
 		defer func() {
 			if err := recover(); err != nil {
-				logs.Error("task:%s 异常:%s", this.name, err)
+				this.getLog().Error("task:%s 异常:%s", this.name, err)
 			}
 			this.lock.Lock()
 			this.doing = false
 			this.lock.Unlock()
 		}()
 		//执行任务
-		logs.Debug("task:%s 开始执行任务", this.name)
+		this.getLog().Debug("task:%s 开始执行任务", this.name)
 		this.f()
 	}()
 
@@ -56,6 +57,7 @@ func (this *Task) execSingle() {
 //TaskService 任务服务
 type TaskService struct {
 	taskList []*Task
+	Log *logs.BeeLogger
 }
 
 //AddTask 创建任务
@@ -65,13 +67,14 @@ func (this *TaskService) AddTask(name string, d time.Duration, f TaskFun) {
 		f:f,
 		name:name,
 		doing:false,
+		log:this.Log,
 	}
 	this.taskList = append(this.taskList, t)
 }
 
 //TaskSingleStart 开始单任务执行启动
 func (this *TaskService)TaskSingleStart() {
-	logs.Info("启动单任务处理定时任务服务...")
+	this.getLog().Info("启动单任务处理定时任务服务...")
 	for _,task := range this.taskList {
 		task.execSingle()
 	}
@@ -85,4 +88,18 @@ func (this *TaskService)TaskSingleStart() {
 			}
 		}
 	}
+}
+
+func (this *TaskService) getLog() *logs.BeeLogger {
+	if this.Log != nil {
+		return this.Log
+	}
+	return logs.GetBeeLogger()
+}
+
+func (this *Task) getLog() *logs.BeeLogger {
+	if this.log != nil {
+		return this.log
+	}
+	return logs.GetBeeLogger()
 }
