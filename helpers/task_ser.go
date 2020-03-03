@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"github.com/astaxie/beego/logs"
+	"runtime/debug"
 	"sync"
 	"time"
 )
@@ -41,7 +42,7 @@ func (this *Task) execSingle() {
 		//定义异常记录
 		defer func() {
 			if err := recover(); err != nil {
-				this.getLog().Error("task:%s 异常:%s", this.name, err)
+				this.getLog().Error("task:%s 异常:%s trace:%s", this.name, err, debug.Stack())
 			}
 			this.lock.Lock()
 			this.doing = false
