@@ -91,6 +91,18 @@ func (this *TaskService)TaskSingleStart() {
 	}
 }
 
+//TaskSingleStart2 将TaskSingleStart的ticker实现改为sleep实现，对比效果
+func (this *TaskService)TaskSingleStart2() {
+	for {
+		for _,task := range this.taskList {
+			if time.Now().Sub(task.lastTime) >= task.d {
+				task.execSingle()
+			}
+		}
+		time.Sleep(time.Second)
+	}
+}
+
 func (this *TaskService) getLog() *logs.BeeLogger {
 	if this.Log != nil {
 		return this.Log
