@@ -92,7 +92,6 @@ func IsLeapYear(nYear int) bool {
 	if nYear <= 0 {
 		return false
 	}
-
 	if (nYear%4 == 0 && nYear%100 != 0) || nYear%400 == 0 {
 		return true
 	}
@@ -114,10 +113,11 @@ func CheckBirthdayValid(nYear, nMonth, nDay int) bool {
 			return false
 		}
 	}
-
 	if 2 == nMonth {
-		if IsLeapYear(nYear) && nDay > 29 {
-			return false
+		if IsLeapYear(nYear) {
+			if nDay > 29 {
+				return false
+			}
 		} else if nDay > 28 {
 			return false
 		}
