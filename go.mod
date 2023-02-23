@@ -13,6 +13,6 @@ require (
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/tencentyun/cos-go-sdk-v5 v0.0.0-20190509074957-12be36a1cddf
-	golang.org/x/text v0.3.2
+	golang.org/x/text v0.3.8
 	google.golang.org/appengine v1.6.1 // indirect
 )
